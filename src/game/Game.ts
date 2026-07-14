@@ -5,7 +5,6 @@ import { Input } from './Input';
 import { Physics, type HitKind } from './Physics';
 import { Renderer } from './Renderer';
 import { Score } from './Score';
-import { BallTrail } from './effects/BallTrail';
 import { Particles } from './effects/Particles';
 import { trajectory } from './effects/Trajectory';
 import { Net } from './entities/Net';
@@ -22,7 +21,6 @@ export class Game {
   private readonly camera = new Camera();
   private readonly audio = new Audio();
   private readonly score = new Score();
-  private readonly trail = new BallTrail();
   private readonly particles = new Particles();
   private readonly net = new Net();
   private readonly hud = new Hud();
@@ -149,9 +147,6 @@ export class Game {
       this.accumulator -= WORLD.step;
       if (this.state === 'flying' || this.state === 'rolling') this.detectBasket();
     }
-    const moving = this.physics.speed > 1.2;
-    this.trail.add(this.physics.position, moving);
-    this.trail.update(delta);
     this.particles.update(delta);
     this.net.update(delta);
     this.camera.update(delta);
@@ -182,7 +177,6 @@ export class Game {
       hoop: this.physics.hoop,
       net: this.net,
       trajectory: this.state === 'dragging' ? trajectory(this.physics.position, this.pull) : [],
-      trail: this.trail,
       particles: this.particles,
       camera: this.camera,
       hud: this.hud,

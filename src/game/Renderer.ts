@@ -1,7 +1,6 @@
 import type { Body } from 'matter-js';
 import { BALL, COLORS, HOOP, WORLD } from './Constants';
 import type { Camera } from './Camera';
-import type { BallTrail } from './effects/BallTrail';
 import type { Particles } from './effects/Particles';
 import type { Hoop } from './entities/Hoop';
 import type { Net } from './entities/Net';
@@ -44,7 +43,6 @@ export class Renderer {
     hoop: Hoop;
     net: Net;
     trajectory: Point[];
-    trail: BallTrail;
     particles: Particles;
     camera: Camera;
     hud: Hud;
@@ -65,7 +63,6 @@ export class Renderer {
     this.dots(args.trajectory);
     this.hoop(args.hoop);
     this.shadow(args.ball);
-    this.trail(args.trail);
     this.ball(args.ball);
     this.net(args.hoop, args.net);
     this.particles(args.particles);
@@ -137,17 +134,6 @@ export class Renderer {
       Math.PI * 2,
     );
     this.context.fill();
-    this.context.restore();
-  }
-  private trail(trail: BallTrail): void {
-    this.context.save();
-    for (const ghost of trail.ghosts) {
-      this.context.globalAlpha = ghost.life * 0.2;
-      this.context.fillStyle = COLORS.orange;
-      this.context.beginPath();
-      this.context.arc(ghost.x, ghost.y, BALL.radius * ghost.life, 0, Math.PI * 2);
-      this.context.fill();
-    }
     this.context.restore();
   }
   private ball(ball: Body): void {

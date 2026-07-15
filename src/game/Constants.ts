@@ -21,6 +21,5 @@ export const COLORS = {
   court: '#dba66e',
   wall: '#1b263b',
   line: '#f8e8d0',
-  orange: '#ed7d2b',
   ink: '#161616',
 } as const;

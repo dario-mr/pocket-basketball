@@ -6,6 +6,7 @@ import type { Hoop } from './entities/Hoop';
 import type { Net } from './entities/Net';
 import type { Point } from './Utils';
 import type { Hud } from './ui/Hud';
+import ballAsset from '../../assets/images/ball.png';
 
 export class Renderer {
   private readonly canvas: HTMLCanvasElement;
@@ -13,12 +14,14 @@ export class Renderer {
   private scale = 1;
   private offsetX = 0;
   private offsetY = 0;
+  private readonly ballImage = new Image();
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D is not available.');
     this.context = context;
+    this.ballImage.src = ballAsset;
     window.addEventListener('resize', () => this.resize());
     this.resize();
   }
@@ -149,22 +152,15 @@ export class Renderer {
     context.save();
     context.translate(ball.position.x, ball.position.y);
     context.rotate(ball.angle);
-    context.fillStyle = COLORS.orange;
-    context.beginPath();
-    context.arc(0, 0, BALL.radius, 0, Math.PI * 2);
-    context.fill();
-    context.strokeStyle = COLORS.ink;
-    context.lineWidth = 1;
-    context.beginPath();
-    context.arc(0, 0, BALL.radius, 0, Math.PI * 2);
-    context.stroke();
-    context.beginPath();
-    context.arc(0, 0, BALL.radius, Math.PI * 0.25, Math.PI * 1.25);
-    context.moveTo(-BALL.radius, 0);
-    context.quadraticCurveTo(0, 8, BALL.radius, 0);
-    context.moveTo(0, -BALL.radius);
-    context.quadraticCurveTo(-8, 0, 0, BALL.radius);
-    context.stroke();
+    if (this.ballImage.complete && this.ballImage.naturalWidth > 0) {
+      context.drawImage(
+        this.ballImage,
+        -BALL.radius,
+        -BALL.radius,
+        BALL.radius * 2,
+        BALL.radius * 2,
+      );
+    }
     context.restore();
   }
 

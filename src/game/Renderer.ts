@@ -176,15 +176,19 @@ export class Renderer {
     context.lineWidth = 1.5;
     const top = hoop.y + 3;
     const bottom = top + 42 + net.squash * 14;
+    const bottomRadiusX = 20;
+    const bottomRadiusY = 4;
     for (let i = -2; i <= 2; i += 1) {
       const x = hoop.x + i * 16;
+      const offsetX = i * 10;
+      const endpointY = bottom - bottomRadiusY * Math.sqrt(1 - (offsetX / bottomRadiusX) ** 2);
       context.beginPath();
       context.moveTo(x, top);
-      context.lineTo(hoop.x + i * 10, bottom);
+      context.lineTo(hoop.x + offsetX, endpointY);
       context.stroke();
     }
     context.beginPath();
-    context.ellipse(hoop.x, bottom, 22, 4, 0, 0, Math.PI * 2);
+    context.ellipse(hoop.x, bottom, bottomRadiusX, bottomRadiusY, 0, 0, Math.PI * 2);
     context.stroke();
     context.restore();
   }

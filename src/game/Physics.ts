@@ -1,5 +1,5 @@
 import { Body, Engine, Events, Sleeping, World } from 'matter-js';
-import { WORLD } from './Constants';
+import { BALL, WORLD } from './Constants';
 import { createBall } from './entities/Ball';
 import { createFloor, createWalls } from './entities/Floor';
 import { Hoop } from './entities/Hoop';
@@ -48,6 +48,6 @@ export class Physics {
   launch(pull: Point): void {
     this.wake();
     Body.setVelocity(this.ball, { x: -pull.x * 0.115, y: -pull.y * 0.115 });
-    Body.setAngularVelocity(this.ball, pull.x * 0.012);
+    Body.setAngularVelocity(this.ball, pull.x * BALL.spinScale);
   }
 }

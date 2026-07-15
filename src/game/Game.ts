@@ -85,7 +85,7 @@ export class Game {
     if (kind === 'floor') {
       this.audio.play('bounce');
       this.particles.burst({ x: this.physics.position.x, y: WORLD.floorY }, '#dbc49f', 5);
-      if (speed > 6) this.camera.hit(1.8);
+      if (speed > 8) this.camera.hit(1.8);
     }
     if (kind === 'backboard') {
       this.audio.play('board');

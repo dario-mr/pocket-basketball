@@ -31,6 +31,7 @@ export class Renderer {
     this.offsetX = (this.canvas.width - WORLD.width * this.scale) / 2;
     this.offsetY = (this.canvas.height - WORLD.height * this.scale) / 2;
   }
+
   pointFromEvent(event: PointerEvent): Point {
     const rect = this.canvas.getBoundingClientRect();
     return {
@@ -38,6 +39,7 @@ export class Renderer {
       y: ((event.clientY - rect.top) * devicePixelRatio) / this.scale - this.offsetY / this.scale,
     };
   }
+
   render(args: {
     ball: Body;
     hoop: Hoop;
@@ -69,6 +71,7 @@ export class Renderer {
     context.restore();
     args.hud.draw(context, args.score, args.highScore, args.combo);
   }
+
   private background(): void {
     const gradient = this.context.createLinearGradient(0, 0, 0, WORLD.height);
     gradient.addColorStop(0, COLORS.wall);
@@ -76,6 +79,7 @@ export class Renderer {
     this.context.fillStyle = gradient;
     this.context.fillRect(0, 0, WORLD.width, WORLD.height);
   }
+
   private floor(): void {
     this.context.fillStyle = COLORS.court;
     this.context.fillRect(0, WORLD.floorY, WORLD.width, WORLD.height - WORLD.floorY);
@@ -86,6 +90,7 @@ export class Renderer {
     this.context.lineTo(WORLD.width, WORLD.floorY);
     this.context.stroke();
   }
+
   private dots(points: Point[]): void {
     this.context.save();
     points.forEach((point, index) => {
@@ -97,13 +102,14 @@ export class Renderer {
     });
     this.context.restore();
   }
+
   private hoop(hoop: Hoop): void {
     const { context } = this;
     const nudge = Math.sin(performance.now() * 0.04) * hoop.vibration;
     context.save();
     context.translate(nudge, 0);
     context.fillStyle = '#e9edf2';
-    context.fillRect(hoop.x + HOOP.gap / 2 + 12, hoop.y - 115, HOOP.boardWidth, HOOP.boardHeight);
+    context.fillRect(hoop.x + HOOP.gap / 2 + 10, hoop.y - 115, HOOP.boardWidth, HOOP.boardHeight);
     context.strokeStyle = '#ea4e4e';
     context.lineWidth = 4;
     context.beginPath();
@@ -117,6 +123,7 @@ export class Renderer {
     context.fill();
     context.restore();
   }
+
   private shadow(ball: Body): void {
     const height = Math.max(0, WORLD.floorY - ball.position.y - BALL.radius);
     const amount = Math.max(0.16, 1 - height / 340);
@@ -136,6 +143,7 @@ export class Renderer {
     this.context.fill();
     this.context.restore();
   }
+
   private ball(ball: Body): void {
     const { context } = this;
     context.save();
@@ -146,7 +154,10 @@ export class Renderer {
     context.arc(0, 0, BALL.radius, 0, Math.PI * 2);
     context.fill();
     context.strokeStyle = COLORS.ink;
-    context.lineWidth = 2;
+    context.lineWidth = 1;
+    context.beginPath();
+    context.arc(0, 0, BALL.radius, 0, Math.PI * 2);
+    context.stroke();
     context.beginPath();
     context.arc(0, 0, BALL.radius, Math.PI * 0.25, Math.PI * 1.25);
     context.moveTo(-BALL.radius, 0);
@@ -156,6 +167,7 @@ export class Renderer {
     context.stroke();
     context.restore();
   }
+
   private net(hoop: Hoop, net: Net): void {
     const { context } = this;
     context.save();
@@ -176,6 +188,7 @@ export class Renderer {
     context.stroke();
     context.restore();
   }
+
   private particles(particles: Particles): void {
     this.context.save();
     for (const particle of particles.items) {

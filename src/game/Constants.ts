@@ -6,7 +6,7 @@ export const BALL = {
   launchScale: 0.115,
   maxPull: 190,
 } as const;
-export const HOOP = { radius: 8, rimY: 190, gap: 72, boardWidth: 12, boardHeight: 125 } as const;
+export const HOOP = { radius: 8, rimY: 190, gap: 72, boardWidth: 10, boardHeight: 125 } as const;
 export const COLORS = {
   court: '#dba66e',
   wall: '#1b263b',

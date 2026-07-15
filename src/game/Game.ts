@@ -34,7 +34,6 @@ export class Game {
   private hoopMove: HoopMove | null = null;
   private accumulator = 0;
   private lastTime = performance.now();
-  private slowUntil = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new Renderer(canvas);
@@ -52,6 +51,7 @@ export class Game {
     this.dragStart = point;
     this.pull = { x: 0, y: 0 };
   }
+
   private drag(point: Point): void {
     if (this.state !== 'dragging') return;
     const x = point.x - this.dragStart.x;
@@ -60,6 +60,7 @@ export class Game {
     const scale = length > BALL.maxPull ? BALL.maxPull / length : 1;
     this.pull = { x: x * scale, y: y * scale };
   }
+
   private release(): void {
     if (this.state !== 'dragging') return;
     if (Math.hypot(this.pull.x, this.pull.y) < 10) {
@@ -72,6 +73,7 @@ export class Game {
     this.scoredThisShot = false;
     this.previousY = this.physics.position.y;
   }
+
   private hit(kind: HitKind, speed: number): void {
     if (kind === 'rim') {
       this.rimHit = true;
@@ -90,6 +92,7 @@ export class Game {
       this.physics.hoop.vibration = Math.min(1.5, speed * 0.2);
     }
   }
+
   private detectBasket(): void {
     const ball = this.physics.ball;
     const hoop = this.physics.hoop;
@@ -107,11 +110,11 @@ export class Game {
       this.hud.show(swish ? `SWISH +${points}` : `+${points}`);
       if (swish) {
         this.audio.play('swish');
-        this.slowUntil = performance.now() + 120;
       }
     }
     this.previousY = ball.position.y;
   }
+
   private scheduleHoop(): void {
     const distanceBonus = Math.floor(this.baskets / 5) * 38;
     const horizontal = 330 + distanceBonus + random(-55, 60);
@@ -126,6 +129,7 @@ export class Game {
       started: performance.now(),
     };
   }
+
   private updateHoop(): void {
     if (!this.hoopMove) return;
     const amount = clamp((performance.now() - this.hoopMove.started) / 550, 0, 1);
@@ -141,7 +145,7 @@ export class Game {
     }
   }
   private update(delta: number): void {
-    this.accumulator += delta * (performance.now() < this.slowUntil ? 0.28 : 1);
+    this.accumulator += delta;
     while (this.accumulator >= WORLD.step) {
       this.physics.step();
       this.accumulator -= WORLD.step;
@@ -168,6 +172,7 @@ export class Game {
     }
     this.updateHoop();
   }
+
   private frame(time: number): void {
     const delta = Math.min(40, time - this.lastTime);
     this.lastTime = time;

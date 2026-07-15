@@ -1,3 +1,5 @@
+import { GAME_MODES, type GameMode } from '../Modes';
+
 const HUD_INSET = 14;
 
 export class Hud {
@@ -9,7 +11,13 @@ export class Hud {
     this.messageUntil = performance.now() + duration;
   }
 
-  draw(context: CanvasRenderingContext2D, score: number, highScore: number, combo: number): void {
+  draw(
+    context: CanvasRenderingContext2D,
+    score: number,
+    highScore: number,
+    combo: number,
+    mode: GameMode,
+  ): void {
     const scale = context.canvas.width / context.canvas.clientWidth;
     context.save();
     context.fillStyle = '#fff8e8';
@@ -20,12 +28,19 @@ export class Hud {
     context.font = `500 ${16 * scale}px system-ui, sans-serif`;
     context.globalAlpha = 0.75;
     context.fillText(`BEST ${highScore}`, HUD_INSET * scale, 46 * scale);
+    context.globalAlpha = 0.48;
+    context.font = `600 ${12 * scale}px system-ui, sans-serif`;
+    context.fillText(
+      GAME_MODES.find((definition) => definition.id === mode)?.title.toUpperCase() ?? '',
+      HUD_INSET * scale,
+      69 * scale,
+    );
 
     if (combo > 1) {
       context.globalAlpha = 1;
       context.fillStyle = '#ffc857';
       context.font = `600 ${16 * scale}px system-ui, sans-serif`;
-      context.fillText(`COMBO ×${combo}`, HUD_INSET * scale, 71 * scale);
+      context.fillText(`COMBO ×${combo}`, HUD_INSET * scale, 91 * scale);
     }
 
     if (performance.now() < this.messageUntil) {

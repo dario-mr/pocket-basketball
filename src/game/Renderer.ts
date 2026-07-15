@@ -1,5 +1,6 @@
 import type { Body } from 'matter-js';
 import { BALL, COLORS, HOOP, WORLD } from './Constants';
+import type { GameMode } from './Modes';
 import type { Camera } from './Camera';
 import type { Particles } from './effects/Particles';
 import type { Hoop } from './entities/Hoop';
@@ -56,17 +57,18 @@ export class Renderer {
     score: number;
     highScore: number;
     combo: number;
+    mode: GameMode;
   }): void {
     const { context } = this;
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.background();
+    this.floor();
     context.save();
     context.translate(
       this.offsetX + args.camera.x * this.scale,
       this.offsetY + args.camera.y * this.scale,
     );
     context.scale(this.scale, this.scale);
-    this.background();
-    this.floor();
     this.dots(args.trajectory);
     this.obstacles(args.obstacles);
     this.hoop(args.hoop);
@@ -75,25 +77,26 @@ export class Renderer {
     this.net(args.hoop, args.net);
     this.particles(args.particles);
     context.restore();
-    args.hud.draw(context, args.score, args.highScore, args.combo);
+    args.hud.draw(context, args.score, args.highScore, args.combo, args.mode);
   }
 
   private background(): void {
-    const gradient = this.context.createLinearGradient(0, 0, 0, WORLD.height);
+    const gradient = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
     gradient.addColorStop(0, COLORS.wall);
     gradient.addColorStop(1, '#283b55');
     this.context.fillStyle = gradient;
-    this.context.fillRect(0, 0, WORLD.width, WORLD.height);
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   private floor(): void {
+    const floorY = this.offsetY + WORLD.floorY * this.scale;
     this.context.fillStyle = COLORS.court;
-    this.context.fillRect(0, WORLD.floorY, WORLD.width, WORLD.height - WORLD.floorY);
+    this.context.fillRect(0, floorY, this.canvas.width, this.canvas.height - floorY);
     this.context.strokeStyle = '#c98951';
-    this.context.lineWidth = 2;
+    this.context.lineWidth = 2 * devicePixelRatio;
     this.context.beginPath();
-    this.context.moveTo(0, WORLD.floorY);
-    this.context.lineTo(WORLD.width, WORLD.floorY);
+    this.context.moveTo(0, floorY);
+    this.context.lineTo(this.canvas.width, floorY);
     this.context.stroke();
   }
 

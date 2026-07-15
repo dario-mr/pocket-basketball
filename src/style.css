@@ -7,7 +7,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #111827;
+  background: #1b263b;
 }
 canvas {
   display: block;
@@ -18,4 +18,145 @@ canvas {
 }
 canvas:active {
   cursor: grabbing;
+}
+#overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  background: #1b263b;
+}
+#overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.menu {
+  width: min(560px, calc(100% - 40px));
+  color: #fff8e8;
+  text-align: center;
+}
+.menu h1 {
+  margin: 0 0 36px;
+  font:
+    800 clamp(34px, 7vw, 52px) / 0.96 system-ui,
+    sans-serif;
+  letter-spacing: -0.035em;
+}
+.menu h1 span {
+  display: block;
+  color: #ffc857;
+  font-size: 0.58em;
+  letter-spacing: 0.18em;
+  margin: 8px 0 0 0.18em;
+}
+.mode-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.mode-button,
+.play-button,
+.menu--pause button {
+  color: inherit;
+  font: inherit;
+  border: 1px solid rgba(255, 248, 232, 0.28);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.mode-button {
+  min-height: 114px;
+  padding: 18px;
+  text-align: left;
+}
+.mode-button strong,
+.mode-button small {
+  display: block;
+}
+.mode-button strong {
+  font:
+    750 20px system-ui,
+    sans-serif;
+}
+.mode-button small {
+  margin-top: 7px;
+  color: rgba(255, 248, 232, 0.66);
+  font:
+    13px/1.3 system-ui,
+    sans-serif;
+}
+.mode-button.is-selected {
+  background: rgba(255, 200, 87, 0.14);
+  border-color: #ffc857;
+  transform: scale(1.035);
+}
+.play-button {
+  margin-top: 30px;
+  min-width: 168px;
+  padding: 13px 28px;
+  border-color: #ffc857;
+  background: #ffc857;
+  color: #1b263b;
+  font:
+    800 16px system-ui,
+    sans-serif;
+  letter-spacing: 0.12em;
+}
+.mode-button:hover,
+.play-button:hover,
+.menu--pause button:hover {
+  border-color: #fff8e8;
+}
+.menu--pause {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+.menu--pause p {
+  margin: 0 0 12px;
+  color: #ffc857;
+  font:
+    800 24px system-ui,
+    sans-serif;
+  letter-spacing: 0.16em;
+}
+.menu--pause button {
+  width: min(240px, 100%);
+  padding: 12px;
+  font:
+    700 15px system-ui,
+    sans-serif;
+  letter-spacing: 0.08em;
+}
+#pause-button {
+  position: fixed;
+  top: 12px;
+  right: 14px;
+  z-index: 1;
+  display: none;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(255, 248, 232, 0.8);
+  background: rgba(27, 38, 59, 0.45);
+  cursor: pointer;
+  font-size: 18px;
+}
+#pause-button.is-visible {
+  display: block;
+}
+@media (max-width: 520px) {
+  .mode-options {
+    grid-template-columns: 1fr;
+  }
+  .mode-button {
+    min-height: 80px;
+  }
 }

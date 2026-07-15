@@ -2,6 +2,7 @@ import { BALL, HOOP, WORLD } from './Constants';
 import { Audio } from './Audio';
 import { Camera } from './Camera';
 import { Input } from './Input';
+import { GameMode } from './Modes';
 import { Physics, type HitKind } from './Physics';
 import { Renderer } from './Renderer';
 import { Score } from './Score';
@@ -21,7 +22,7 @@ export class Game {
   private readonly input: Input;
   private readonly camera = new Camera();
   private readonly audio = new Audio();
-  private readonly score = new Score();
+  private readonly score: Score;
   private readonly particles = new Particles();
   private readonly net = new Net();
   private readonly hud = new Hud();
@@ -34,22 +35,56 @@ export class Game {
   private baskets = 0;
   private accumulator = 0;
   private lastTime = performance.now();
+  private animationFrame = 0;
+  private paused = false;
+  private destroyed = false;
+  private readonly onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.onPause();
+    }
+    if (!event.repeat && event.key.toLowerCase() === 'o' && this.mode === GameMode.Obstacles)
+      this.hoops.spawnObstacle(this.baskets);
+  };
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    private readonly mode: GameMode,
+    private readonly onPause: () => void,
+  ) {
     this.renderer = new Renderer(canvas);
     this.input = new Input(canvas, (event) => this.renderer.pointFromEvent(event));
+    this.score = new Score(mode);
     this.input.onStart = (point) => this.startDrag(point);
     this.input.onMove = (point) => this.drag(point);
     this.input.onEnd = () => this.release();
     this.physics.onHit = (kind, speed) => this.hit(kind, speed);
-    window.addEventListener('keydown', (event) => {
-      if (!event.repeat && event.key.toLowerCase() === 'o') this.hoops.spawnObstacle(this.baskets);
-    });
-    requestAnimationFrame((time) => this.frame(time));
+    window.addEventListener('keydown', this.onKeyDown);
+    this.animationFrame = requestAnimationFrame((time) => this.frame(time));
+  }
+
+  pause(): void {
+    this.paused = true;
+  }
+
+  get isPaused(): boolean {
+    return this.paused;
+  }
+
+  resume(): void {
+    this.paused = false;
+    this.lastTime = performance.now();
+  }
+
+  destroy(): void {
+    this.destroyed = true;
+    cancelAnimationFrame(this.animationFrame);
+    this.input.destroy();
+    window.removeEventListener('keydown', this.onKeyDown);
   }
 
   private startDrag(point: Point): void {
-    if (this.state !== 'idle' || this.hoops.isMoving) return;
+    if (this.paused || this.state !== 'idle' || this.hoops.isMoving) return;
     this.state = 'dragging';
     this.dragStart = point;
     this.pull = { x: 0, y: 0 };
@@ -140,7 +175,7 @@ export class Game {
       this.physics.isSettled &&
       !this.hoops.isMoving
     ) {
-      if (this.scoredThisShot) this.hoops.start(this.baskets, true);
+      if (this.scoredThisShot) this.hoops.start(this.baskets, this.mode === GameMode.Obstacles);
       else this.score.miss();
       this.state = this.hoops.isMoving ? 'rolling' : 'idle';
     }
@@ -148,9 +183,10 @@ export class Game {
   }
 
   private frame(time: number): void {
+    if (this.destroyed) return;
     const delta = Math.min(40, time - this.lastTime);
     this.lastTime = time;
-    this.update(delta);
+    if (!this.paused) this.update(delta);
     this.renderer.render({
       ball: this.physics.ball,
       hoop: this.physics.hoop,
@@ -163,7 +199,8 @@ export class Game {
       score: this.score.score,
       highScore: this.score.highScore,
       combo: this.score.combo,
+      mode: this.mode,
     });
-    requestAnimationFrame((next) => this.frame(next));
+    this.animationFrame = requestAnimationFrame((next) => this.frame(next));
   }
 }

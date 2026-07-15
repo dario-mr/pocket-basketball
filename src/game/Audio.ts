@@ -1,6 +1,6 @@
 import { Howl } from 'howler';
 
-type Sound = 'bounce' | 'rim' | 'board' | 'swish' | 'score' | 'combo' | 'perfect';
+export type Sound = 'bounce' | 'rim' | 'board' | 'swish' | 'score' | 'combo' | 'perfect';
 
 const wav = (frequency: number, duration: number): string => {
   const sampleRate = 8000;

@@ -7,25 +7,37 @@ export class Input {
   onMove: ((point: Point) => void) | null = null;
   onEnd: ((point: Point) => void) | null = null;
 
-  constructor(target: HTMLCanvasElement, toWorld: (event: PointerEvent) => Point) {
-    target.addEventListener('pointerdown', (event) => {
-      this.down = true;
-      this.point = toWorld(event);
-      target.setPointerCapture(event.pointerId);
-      this.onStart?.(this.point);
-    });
-    target.addEventListener('pointermove', (event) => {
-      this.point = toWorld(event);
-      if (this.down) this.onMove?.(this.point);
-    });
-    target.addEventListener('pointerup', (event) => this.end(event, toWorld));
-    target.addEventListener('pointercancel', (event) => this.end(event, toWorld));
-  }
-
-  private end(event: PointerEvent, toWorld: (event: PointerEvent) => Point): void {
+  private readonly start = (event: PointerEvent): void => {
+    this.down = true;
+    this.point = this.toWorld(event);
+    this.target.setPointerCapture(event.pointerId);
+    this.onStart?.(this.point);
+  };
+  private readonly move = (event: PointerEvent): void => {
+    this.point = this.toWorld(event);
+    if (this.down) this.onMove?.(this.point);
+  };
+  private readonly end = (event: PointerEvent): void => {
     if (!this.down) return;
     this.down = false;
-    this.point = toWorld(event);
+    this.point = this.toWorld(event);
     this.onEnd?.(this.point);
+  };
+
+  constructor(
+    private readonly target: HTMLCanvasElement,
+    private readonly toWorld: (event: PointerEvent) => Point,
+  ) {
+    target.addEventListener('pointerdown', this.start);
+    target.addEventListener('pointermove', this.move);
+    target.addEventListener('pointerup', this.end);
+    target.addEventListener('pointercancel', this.end);
+  }
+
+  destroy(): void {
+    this.target.removeEventListener('pointerdown', this.start);
+    this.target.removeEventListener('pointermove', this.move);
+    this.target.removeEventListener('pointerup', this.end);
+    this.target.removeEventListener('pointercancel', this.end);
   }
 }

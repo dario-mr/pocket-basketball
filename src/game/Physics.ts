@@ -1,8 +1,10 @@
 import { Body, Engine, Events, Sleeping, World } from 'matter-js';
-import { BALL, WORLD } from './Constants';
+import { BALL, HOOP, WORLD } from './Constants';
 import { createBall } from './entities/Ball';
 import { createFloor, createWalls } from './entities/Floor';
 import { Hoop } from './entities/Hoop';
+import { Obstacle } from './entities/Obstacle';
+import { ObstacleSpawner } from './systems/ObstacleSpawner';
 import type { Point } from './Utils';
 
 export type HitKind = 'floor' | 'rim' | 'backboard';
@@ -11,6 +13,8 @@ export class Physics {
   readonly engine = Engine.create({ enableSleeping: true });
   readonly ball = createBall(WORLD.ballStartX, WORLD.floorY - 22);
   readonly hoop = new Hoop(this.engine.world, WORLD.hoopStartX, WORLD.hoopStartY);
+  readonly obstacles: Obstacle[] = [];
+  private readonly obstacleSpawner = new ObstacleSpawner();
   onHit: ((kind: HitKind, speed: number) => void) | null = null;
 
   constructor() {
@@ -39,8 +43,27 @@ export class Physics {
   get isSettled(): boolean {
     return this.ball.isSleeping || this.speed < 0.16;
   }
+  isHoopClear(position: Point): boolean {
+    const hoop = {
+      minX: position.x - HOOP.gap / 2 - 24,
+      maxX: position.x + HOOP.gap / 2 + HOOP.boardWidth + 48,
+      minY: position.y - HOOP.boardHeight - 24,
+      maxY: position.y + 55,
+    };
+    return this.obstacles.every(
+      ({ body }) =>
+        body.bounds.max.x < hoop.minX ||
+        body.bounds.min.x > hoop.maxX ||
+        body.bounds.max.y < hoop.minY ||
+        body.bounds.min.y > hoop.maxY,
+    );
+  }
   step(): void {
+    this.obstacles.forEach((obstacle) => obstacle.update(performance.now()));
     Engine.update(this.engine, WORLD.step);
+  }
+  addObstacle(from: Point, to: Point): void {
+    this.obstacleSpawner.spawn(this.engine.world, this.obstacles, from, to);
   }
   wake(): void {
     Sleeping.set(this.ball, false);

@@ -8,15 +8,16 @@ import { Score } from './Score';
 import { Particles } from './effects/Particles';
 import { trajectory } from './effects/Trajectory';
 import { Net } from './entities/Net';
+import { HoopProgression } from './systems/HoopProgression';
 import { Hud } from './ui/Hud';
-import { clamp, lerp, random, type Point } from './Utils';
+import type { Point } from './Utils';
 
 type State = 'idle' | 'dragging' | 'flying' | 'rolling';
-type HoopMove = Readonly<{ from: Point; to: Point; started: number }>;
 
 export class Game {
   private readonly renderer: Renderer;
   private readonly physics = new Physics();
+  private readonly hoops = new HoopProgression(this.physics);
   private readonly input: Input;
   private readonly camera = new Camera();
   private readonly audio = new Audio();
@@ -31,7 +32,6 @@ export class Game {
   private rimHit = false;
   private scoredThisShot = false;
   private baskets = 0;
-  private hoopMove: HoopMove | null = null;
   private accumulator = 0;
   private lastTime = performance.now();
 
@@ -42,11 +42,14 @@ export class Game {
     this.input.onMove = (point) => this.drag(point);
     this.input.onEnd = () => this.release();
     this.physics.onHit = (kind, speed) => this.hit(kind, speed);
+    window.addEventListener('keydown', (event) => {
+      if (!event.repeat && event.key.toLowerCase() === 'o') this.hoops.spawnObstacle(this.baskets);
+    });
     requestAnimationFrame((time) => this.frame(time));
   }
 
   private startDrag(point: Point): void {
-    if (this.state !== 'idle' || this.hoopMove) return;
+    if (this.state !== 'idle' || this.hoops.isMoving) return;
     this.state = 'dragging';
     this.dragStart = point;
     this.pull = { x: 0, y: 0 };
@@ -115,39 +118,6 @@ export class Game {
     this.previousY = ball.position.y;
   }
 
-  private scheduleHoop(): void {
-    const distanceBonus = Math.floor(this.baskets / 5) * 38;
-    const horizontal = WORLD.hoopDistance + distanceBonus + random(-55, 60);
-    const side = this.physics.position.x < WORLD.width / 2 ? 1 : -1;
-    const target = {
-      x: clamp(this.physics.position.x + side * horizontal, WORLD.hoopMinX, WORLD.hoopMaxX),
-      y: clamp(
-        WORLD.hoopStartY - Math.floor(this.baskets / 5) * 10 + random(-35, 35),
-        WORLD.hoopMinY,
-        WORLD.hoopMaxY,
-      ),
-    };
-    this.hoopMove = {
-      from: { x: this.physics.hoop.x, y: this.physics.hoop.y },
-      to: target,
-      started: performance.now(),
-    };
-  }
-
-  private updateHoop(): void {
-    if (!this.hoopMove) return;
-    const amount = clamp((performance.now() - this.hoopMove.started) / 550, 0, 1);
-    const eased = 1 - (1 - amount) ** 3;
-    this.physics.hoop.move(
-      this.physics.engine.world,
-      lerp(this.hoopMove.from.x, this.hoopMove.to.x, eased),
-      lerp(this.hoopMove.from.y, this.hoopMove.to.y, eased),
-    );
-    if (amount === 1) {
-      this.hoopMove = null;
-      this.state = 'idle';
-    }
-  }
   private update(delta: number): void {
     this.accumulator += delta;
     while (this.accumulator >= WORLD.step) {
@@ -168,13 +138,13 @@ export class Game {
     if (
       (this.state === 'flying' || this.state === 'rolling') &&
       this.physics.isSettled &&
-      !this.hoopMove
+      !this.hoops.isMoving
     ) {
-      if (this.scoredThisShot) this.scheduleHoop();
+      if (this.scoredThisShot) this.hoops.start(this.baskets, true);
       else this.score.miss();
-      this.state = this.hoopMove ? 'rolling' : 'idle';
+      this.state = this.hoops.isMoving ? 'rolling' : 'idle';
     }
-    this.updateHoop();
+    if (this.hoops.update()) this.state = 'idle';
   }
 
   private frame(time: number): void {
@@ -184,6 +154,7 @@ export class Game {
     this.renderer.render({
       ball: this.physics.ball,
       hoop: this.physics.hoop,
+      obstacles: this.physics.obstacles,
       net: this.net,
       trajectory: this.state === 'dragging' ? trajectory(this.physics.position, this.pull) : [],
       particles: this.particles,

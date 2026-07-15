@@ -4,6 +4,7 @@ import type { Camera } from './Camera';
 import type { Particles } from './effects/Particles';
 import type { Hoop } from './entities/Hoop';
 import type { Net } from './entities/Net';
+import type { Obstacle } from './entities/Obstacle';
 import type { Point } from './Utils';
 import type { Hud } from './ui/Hud';
 import ballAsset from '../../assets/images/ball.png';
@@ -46,6 +47,7 @@ export class Renderer {
   render(args: {
     ball: Body;
     hoop: Hoop;
+    obstacles: Obstacle[];
     net: Net;
     trajectory: Point[];
     particles: Particles;
@@ -66,6 +68,7 @@ export class Renderer {
     this.background();
     this.floor();
     this.dots(args.trajectory);
+    this.obstacles(args.obstacles);
     this.hoop(args.hoop);
     this.shadow(args.ball);
     this.ball(args.ball);
@@ -104,6 +107,28 @@ export class Renderer {
       this.context.fill();
     });
     this.context.restore();
+  }
+
+  private obstacles(obstacles: Obstacle[]): void {
+    for (const obstacle of obstacles) {
+      const { body } = obstacle;
+      this.context.save();
+      this.context.translate(body.position.x, body.position.y);
+      this.context.rotate(body.angle);
+      this.context.fillStyle = obstacle.color;
+      if (obstacle.kind === 'dot') {
+        this.context.beginPath();
+        this.context.arc(0, 0, 12, 0, Math.PI * 2);
+        this.context.fill();
+      } else
+        this.context.fillRect(
+          obstacle.kind === 'vertical' ? -6.5 : obstacle.kind === 'paddle' ? -46 : -37,
+          obstacle.kind === 'vertical' ? -37 : -6.5,
+          obstacle.kind === 'vertical' ? 13 : obstacle.kind === 'paddle' ? 92 : 74,
+          obstacle.kind === 'vertical' ? 74 : 13,
+        );
+      this.context.restore();
+    }
   }
 
   private hoop(hoop: Hoop): void {

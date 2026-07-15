@@ -1,4 +1,5 @@
 import { Howl } from 'howler';
+import { prepareAudioForPlayback } from './AudioSession';
 
 export type Sound = 'bounce' | 'rim' | 'board' | 'swish' | 'score' | 'combo' | 'perfect';
 
@@ -40,7 +41,13 @@ export class Audio {
     combo: new Howl({ src: [wav(880, 0.2)], volume: 0.2 }),
     perfect: new Howl({ src: [wav(1040, 0.3)], volume: 0.2 }),
   };
+
+  constructor() {
+    prepareAudioForPlayback();
+  }
+
   play(sound: Sound): void {
+    prepareAudioForPlayback();
     const id = this.sounds[sound].play();
     this.sounds[sound].rate(0.94 + Math.random() * 0.12, id);
   }

@@ -108,7 +108,7 @@ canvas:active {
     sans-serif;
   letter-spacing: 0.12em;
 }
-.mode-button:hover,
+.mode-button:not(.is-selected):hover,
 .play-button:hover,
 .menu--pause button:hover {
   border-color: #fff8e8;

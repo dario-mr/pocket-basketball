@@ -9,8 +9,8 @@ export type HitKind = 'floor' | 'rim' | 'backboard';
 
 export class Physics {
   readonly engine = Engine.create({ enableSleeping: true });
-  readonly ball = createBall(220, WORLD.floorY - 22);
-  readonly hoop = new Hoop(this.engine.world, 700, 200);
+  readonly ball = createBall(WORLD.ballStartX, WORLD.floorY - 22);
+  readonly hoop = new Hoop(this.engine.world, WORLD.hoopStartX, WORLD.hoopStartY);
   onHit: ((kind: HitKind, speed: number) => void) | null = null;
 
   constructor() {

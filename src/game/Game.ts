@@ -117,11 +117,15 @@ export class Game {
 
   private scheduleHoop(): void {
     const distanceBonus = Math.floor(this.baskets / 5) * 38;
-    const horizontal = 330 + distanceBonus + random(-55, 60);
+    const horizontal = WORLD.hoopDistance + distanceBonus + random(-55, 60);
     const side = this.physics.position.x < WORLD.width / 2 ? 1 : -1;
     const target = {
-      x: clamp(this.physics.position.x + side * horizontal, 135, 825),
-      y: clamp(200 - Math.floor(this.baskets / 5) * 10 + random(-35, 35), 110, 270),
+      x: clamp(this.physics.position.x + side * horizontal, WORLD.hoopMinX, WORLD.hoopMaxX),
+      y: clamp(
+        WORLD.hoopStartY - Math.floor(this.baskets / 5) * 10 + random(-35, 35),
+        WORLD.hoopMinY,
+        WORLD.hoopMaxY,
+      ),
     };
     this.hoopMove = {
       from: { x: this.physics.hoop.x, y: this.physics.hoop.y },

@@ -67,7 +67,7 @@ export const BALL = {
   frictionAir: 0.008,
   launchScale: 0.115,
   spinScale: 0.006,
-  maxPull: 220,
+  maxPull: 230,
 } as const;
 
 export const HOOP = {
@@ -75,6 +75,7 @@ export const HOOP = {
   rimY: 190,
   gap: 72,
   scoringInset: 3,
+  scoringDepth: 40,
   boardWidth: 10,
   boardHeight: 125,
 } as const;

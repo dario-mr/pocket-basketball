@@ -156,7 +156,7 @@ export class Game {
     this.physics.launch(this.pull);
     this.state = 'flying';
     this.rimHit = false;
-    this.basketDetector.reset();
+    this.basketDetector.reset(this.physics.position.y);
   }
 
   private hit(kind: HitKind, speed: number): void {

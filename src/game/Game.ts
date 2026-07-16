@@ -169,11 +169,8 @@ export class Game {
       const points = this.score.basket(swish);
       this.net.hit();
       this.particles.burst({ x: hoop.x, y: hoop.y + 15 }, '#fff8e8', swish ? 16 : 9);
-      this.audio.play(swish ? 'perfect' : this.score.combo > 1 ? 'combo' : 'score');
+      this.audio.play('swoosh');
       this.hud.show(swish ? `SWISH +${points}` : `+${points}`);
-      if (swish) {
-        this.audio.play('swish');
-      }
     }
     this.previousY = ball.position.y;
   }

@@ -17,6 +17,7 @@ export class Renderer {
   private offsetX = 0;
   private offsetY = 0;
   private readonly ballImage = new Image();
+  private readonly onResize = (): void => this.resize();
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -24,8 +25,12 @@ export class Renderer {
     if (!context) throw new Error('Canvas 2D is not available.');
     this.context = context;
     this.ballImage.src = ballAsset;
-    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('resize', this.onResize);
     this.resize();
+  }
+
+  destroy(): void {
+    window.removeEventListener('resize', this.onResize);
   }
 
   resize(): void {

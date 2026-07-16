@@ -87,6 +87,7 @@ export class Game {
     this.destroyed = true;
     cancelAnimationFrame(this.animationFrame);
     this.input.destroy();
+    this.renderer.destroy();
     window.removeEventListener('keydown', this.onKeyDown);
   }
 

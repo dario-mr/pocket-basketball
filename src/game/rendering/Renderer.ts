@@ -22,7 +22,9 @@ export class Renderer {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     const context = canvas.getContext('2d');
-    if (!context) throw new Error('Canvas 2D is not available.');
+    if (!context) {
+      throw new Error('Canvas 2D is not available.');
+    }
     this.context = context;
     this.ballImage.src = ballAsset;
     window.addEventListener('resize', this.onResize);
@@ -127,13 +129,14 @@ export class Renderer {
         this.context.beginPath();
         this.context.arc(0, 0, 12, 0, Math.PI * 2);
         this.context.fill();
-      } else
+      } else {
         this.context.fillRect(
           obstacle.kind === 'vertical' ? -6.5 : obstacle.kind === 'paddle' ? -46 : -37,
           obstacle.kind === 'vertical' ? -37 : -6.5,
           obstacle.kind === 'vertical' ? 13 : obstacle.kind === 'paddle' ? 92 : 74,
           obstacle.kind === 'vertical' ? 74 : 13,
         );
+      }
       this.context.restore();
     }
   }

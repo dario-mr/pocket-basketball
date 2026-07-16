@@ -15,10 +15,14 @@ export class Input {
   };
   private readonly move = (event: PointerEvent): void => {
     this.point = this.toWorld(event);
-    if (this.down) this.onMove?.(this.point);
+    if (this.down) {
+      this.onMove?.(this.point);
+    }
   };
   private readonly end = (event: PointerEvent): void => {
-    if (!this.down) return;
+    if (!this.down) {
+      return;
+    }
     this.down = false;
     this.point = this.toWorld(event);
     this.onEnd?.(this.point);

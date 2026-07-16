@@ -31,7 +31,9 @@ export class HoopProgression {
   }
 
   update(): boolean {
-    if (!this.move) return false;
+    if (!this.move) {
+      return false;
+    }
     const amount = clamp((performance.now() - this.move.started) / 550, 0, 1);
     const eased = 1 - (1 - amount) ** 3;
     this.physics.hoop.move(
@@ -39,17 +41,23 @@ export class HoopProgression {
       lerp(this.move.from.x, this.move.to.x, eased),
       lerp(this.move.from.y, this.move.to.y, eased),
     );
-    if (amount !== 1) return false;
+    if (amount !== 1) {
+      return false;
+    }
     this.move = null;
     return true;
   }
 
   private nextTarget(baskets: number): Point {
     const fallback = this.randomTarget(baskets);
-    if (this.physics.isHoopClear(fallback)) return fallback;
+    if (this.physics.isHoopClear(fallback)) {
+      return fallback;
+    }
     for (let attempt = 0; attempt < 11; attempt += 1) {
       const target = this.randomTarget(baskets);
-      if (this.physics.isHoopClear(target)) return target;
+      if (this.physics.isHoopClear(target)) {
+        return target;
+      }
     }
     let alternative: Point | null = null;
     for (let x = WORLD.hoopMinX; x <= WORLD.hoopMaxX; x += 60) {
@@ -60,8 +68,9 @@ export class HoopProgression {
           (!alternative ||
             Math.hypot(target.x - fallback.x, target.y - fallback.y) <
               Math.hypot(alternative.x - fallback.x, alternative.y - fallback.y))
-        )
+        ) {
           alternative = target;
+        }
       }
     }
     return alternative ?? fallback;

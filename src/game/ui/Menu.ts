@@ -56,9 +56,15 @@ export class Menu {
     this.root.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((button) => {
       button.addEventListener('click', () => {
         const action = button.dataset.action;
-        if (action === 'resume') this.actions.onResume();
-        if (action === 'restart') this.actions.onRestart();
-        if (action === 'menu') this.actions.onMenu();
+        if (action === 'resume') {
+          this.actions.onResume();
+        }
+        if (action === 'restart') {
+          this.actions.onRestart();
+        }
+        if (action === 'menu') {
+          this.actions.onMenu();
+        }
       });
     });
   }

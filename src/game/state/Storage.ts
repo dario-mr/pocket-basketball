@@ -33,7 +33,9 @@ export const removeStorage = (key: StorageKey): void => {
 
 export const readJson = <Value>(key: StorageKey): Value | null => {
   const value = readStorage(key);
-  if (value === null) return null;
+  if (value === null) {
+    return null;
+  }
   try {
     return JSON.parse(value) as Value;
   } catch {

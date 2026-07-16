@@ -48,8 +48,9 @@ export class Game {
       event.preventDefault();
       this.onPause();
     }
-    if (!event.repeat && event.key.toLowerCase() === 'o' && this.mode === GameMode.Obstacles)
+    if (!event.repeat && event.key.toLowerCase() === 'o' && this.mode === GameMode.Obstacles) {
       this.hoops.spawnObstacle(this.baskets);
+    }
   };
 
   constructor(
@@ -115,19 +116,25 @@ export class Game {
   }
 
   private startDrag(point: Point): void {
-    if (this.paused || this.state !== 'idle' || this.hoops.isMoving) return;
+    if (this.paused || this.state !== 'idle' || this.hoops.isMoving) {
+      return;
+    }
     this.state = 'dragging';
     this.dragStart = point;
     this.pull = { x: 0, y: 0 };
   }
 
   private drag(point: Point): void {
-    if (this.state !== 'dragging' && this.state !== 'cancelled') return;
+    if (this.state !== 'dragging' && this.state !== 'cancelled') {
+      return;
+    }
     const x = point.x - this.dragStart.x;
     const y = point.y - this.dragStart.y;
     const length = Math.hypot(x, y);
     if (this.state === 'cancelled') {
-      if (length < BALL.radius * 2) return;
+      if (length < BALL.radius * 2) {
+        return;
+      }
       this.state = 'dragging';
     }
     if (this.shouldCancelShot(length)) {
@@ -148,7 +155,9 @@ export class Game {
       this.state = 'idle';
       return;
     }
-    if (this.state !== 'dragging') return;
+    if (this.state !== 'dragging') {
+      return;
+    }
     if (Math.hypot(this.pull.x, this.pull.y) < 10) {
       this.state = 'idle';
       return;
@@ -165,12 +174,16 @@ export class Game {
       this.physics.hoop.vibration = Math.min(3, speed * 0.45);
       this.audio.play('rim');
       this.particles.burst(this.physics.position, '#f6c3a0', 4);
-      if (speed > 5) this.camera.hit(2.2);
+      if (speed > 5) {
+        this.camera.hit(2.2);
+      }
     }
     if (kind === 'floor') {
       this.audio.play('bounce');
       this.particles.burst({ x: this.physics.position.x, y: WORLD.floorY }, '#dbc49f', 5);
-      if (speed > 8) this.camera.hit(1.8);
+      if (speed > 8) {
+        this.camera.hit(1.8);
+      }
     }
     if (kind === 'backboard') {
       this.audio.play('board');
@@ -196,7 +209,9 @@ export class Game {
     while (this.accumulator >= WORLD.step) {
       this.physics.step();
       this.accumulator -= WORLD.step;
-      if (this.state === 'flying' || this.state === 'rolling') this.detectBasket();
+      if (this.state === 'flying' || this.state === 'rolling') {
+        this.detectBasket();
+      }
     }
     this.particles.update(delta);
     this.net.update(delta);
@@ -206,23 +221,30 @@ export class Game {
       this.state === 'flying' &&
       this.physics.position.y > WORLD.floorY - BALL.radius - 4 &&
       this.physics.speed < 3
-    )
+    ) {
       this.state = 'rolling';
+    }
     if (
       (this.state === 'flying' || this.state === 'rolling') &&
       this.physics.isSettled &&
       !this.hoops.isMoving
     ) {
-      if (this.basketDetector.hasScored)
+      if (this.basketDetector.hasScored) {
         this.hoops.start(this.baskets, this.mode === GameMode.Obstacles);
-      else this.score.miss();
+      } else {
+        this.score.miss();
+      }
       this.state = this.hoops.isMoving ? 'rolling' : 'idle';
     }
-    if (this.hoops.update()) this.state = 'idle';
+    if (this.hoops.update()) {
+      this.state = 'idle';
+    }
   }
 
   private frame(time: number): void {
-    if (this.destroyed) return;
+    if (this.destroyed) {
+      return;
+    }
     const frameTime = time - this.lastTime;
     const delta = Math.min(40, frameTime);
     this.lastTime = time;
@@ -230,7 +252,9 @@ export class Game {
     if (!this.paused) {
       const updateStarted = this.performanceHud ? performance.now() : 0;
       this.update(delta);
-      if (this.performanceHud) updateTime = performance.now() - updateStarted;
+      if (this.performanceHud) {
+        updateTime = performance.now() - updateStarted;
+      }
     }
     const renderStarted = this.performanceHud ? performance.now() : 0;
     this.renderer.render({
@@ -247,8 +271,9 @@ export class Game {
       combo: this.score.combo,
       mode: this.mode,
     });
-    if (this.performanceHud)
+    if (this.performanceHud) {
       this.performanceHud.record(frameTime, updateTime, performance.now() - renderStarted);
+    }
     this.animationFrame = requestAnimationFrame((next) => this.frame(next));
   }
 }

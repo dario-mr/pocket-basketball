@@ -6,6 +6,6 @@ export default [
     files: ['src/**/*.ts'],
     languageOptions: { parser },
     plugins: { '@typescript-eslint': tseslint },
-    rules: { ...tseslint.configs.recommended.rules },
+    rules: { ...tseslint.configs.recommended.rules, curly: ['error', 'all'] },
   },
 ];

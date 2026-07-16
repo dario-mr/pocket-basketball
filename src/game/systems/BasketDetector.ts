@@ -18,14 +18,20 @@ export class BasketDetector {
   }
 
   detect(ball: Body, hoop: Hoop): boolean {
-    if (this.scoredThisShot) return false;
-    if (ball.position.y < hoop.y) this.passedAboveRim = true;
+    if (this.scoredThisShot) {
+      return false;
+    }
+    if (ball.position.y < hoop.y) {
+      this.passedAboveRim = true;
+    }
     const scoreLine = hoop.y + HOOP.scoringDepth;
     const crossedDown =
       this.previousY < scoreLine && ball.position.y >= scoreLine && ball.velocity.y > 0;
     const insideRim = Math.abs(ball.position.x - hoop.x) < HOOP.gap / 2 - HOOP.scoringInset;
     this.previousY = ball.position.y;
-    if (!this.passedAboveRim || !crossedDown || !insideRim) return false;
+    if (!this.passedAboveRim || !crossedDown || !insideRim) {
+      return false;
+    }
     this.scoredThisShot = true;
     return true;
   }

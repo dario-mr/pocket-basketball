@@ -7,7 +7,9 @@ interface NavigatorWithAudioSession extends Navigator {
 
 export const prepareAudioForPlayback = (): void => {
   const audioSession = (navigator as NavigatorWithAudioSession).audioSession;
-  if (!audioSession) return;
+  if (!audioSession) {
+    return;
+  }
 
   try {
     audioSession.type = 'playback';

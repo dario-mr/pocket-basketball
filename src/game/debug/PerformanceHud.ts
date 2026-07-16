@@ -37,7 +37,9 @@ export class PerformanceHud {
     this.renderTotal += render;
     const now = performance.now();
     const elapsed = now - this.lastReport;
-    if (elapsed < 750) return;
+    if (elapsed < 750) {
+      return;
+    }
     const averageFrame = this.frameTotal / this.frames;
     const longTasks = this.supportsLongTasks
       ? `${this.longTasks} / ${this.longestTask.toFixed(0)}ms`

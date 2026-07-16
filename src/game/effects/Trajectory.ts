@@ -12,7 +12,9 @@ export const trajectory = (start: Point, pull: Point): Point[] => {
     velocity.y = velocity.y * airDrag + gravityPerStep;
     position.x += velocity.x;
     position.y += velocity.y;
-    if (step % 3 === 0) points.push({ ...position });
+    if (step % 3 === 0) {
+      points.push({ ...position });
+    }
   }
   return points;
 };

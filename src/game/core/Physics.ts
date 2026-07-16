@@ -24,12 +24,17 @@ export class Physics {
     Events.on(this.engine, 'collisionStart', (event) => {
       for (const pair of event.pairs) {
         const bodies = [pair.bodyA, pair.bodyB];
-        if (!bodies.some((body) => body.label === 'ball')) continue;
+        if (!bodies.some((body) => body.label === 'ball')) {
+          continue;
+        }
         const other = bodies.find((body) => body.label !== 'ball');
-        if (!other) continue;
+        if (!other) {
+          continue;
+        }
         const kind = other.label as HitKind;
-        if (kind === 'floor' || kind === 'rim' || kind === 'backboard')
+        if (kind === 'floor' || kind === 'rim' || kind === 'backboard') {
           this.onHit?.(kind, this.speed);
+        }
       }
     });
   }

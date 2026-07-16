@@ -67,19 +67,24 @@ export class Obstacle {
   }
 
   update(time: number): void {
-    if (this.kind === 'paddle')
+    if (this.kind === 'paddle') {
       Body.setAngle(this.body, Math.sin(time * 0.004 + this.phase) * 1.15);
-    if (!this.moving || this.kind === 'paddle') return;
-    if (this.kind === 'horizontal')
+    }
+    if (!this.moving || this.kind === 'paddle') {
+      return;
+    }
+    if (this.kind === 'horizontal') {
       Body.setPosition(this.body, {
         x: this.origin.x + Math.sin(time * 0.003 + this.phase) * 55,
         y: this.origin.y,
       });
-    if (this.kind === 'vertical')
+    }
+    if (this.kind === 'vertical') {
       Body.setPosition(this.body, {
         x: this.origin.x,
         y: this.origin.y + Math.sin(time * 0.003 + this.phase) * 45,
       });
+    }
     if (this.kind === 'diagonal') {
       const distance = Math.sin(time * 0.003 + this.phase) * 42;
       Body.setPosition(this.body, { x: this.origin.x + distance, y: this.origin.y + distance });

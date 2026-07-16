@@ -16,14 +16,20 @@ export class ObstacleSpawner {
   private nextKind(): ObstacleKind {
     const weights = obstacleKinds.map((kind) => {
       let weight = OBSTACLE_TYPES[kind].weight;
-      if (this.recentKinds.at(-1) === kind) weight *= 0.15;
-      if (this.recentKinds.filter((recent) => recent === kind).length >= 2) weight *= 0.25;
+      if (this.recentKinds.at(-1) === kind) {
+        weight *= 0.15;
+      }
+      if (this.recentKinds.filter((recent) => recent === kind).length >= 2) {
+        weight *= 0.25;
+      }
       return weight;
     });
     let pick = Math.random() * weights.reduce((total, weight) => total + weight, 0);
     for (const [index, kind] of obstacleKinds.entries()) {
       pick -= weights[index];
-      if (pick < 0) return kind;
+      if (pick < 0) {
+        return kind;
+      }
     }
     return obstacleKinds.at(-1)!;
   }

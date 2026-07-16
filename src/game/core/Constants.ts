@@ -70,7 +70,13 @@ export const BALL = {
   maxPull: 220,
 } as const;
 
-export const HOOP = { radius: 4, rimY: 190, gap: 72, boardWidth: 10, boardHeight: 125 } as const;
+export const HOOP = {
+  radius: 4,
+  rimY: 190,
+  gap: 72,
+  boardWidth: 10,
+  boardHeight: 125,
+} as const;
 
 export const COLORS = {
   court: '#dba66e',

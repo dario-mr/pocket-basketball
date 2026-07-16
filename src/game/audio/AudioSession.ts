@@ -1,3 +1,4 @@
+// iOS exposes this non-standard audio-session extension.
 type AudioSessionType = 'auto' | 'ambient' | 'playback' | 'play-and-record' | 'transient';
 
 interface NavigatorWithAudioSession extends Navigator {

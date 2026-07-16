@@ -1,5 +1,5 @@
 import { Bodies, Body, Composite, World } from 'matter-js';
-import { HOOP } from '../Constants';
+import { HOOP } from '../core/Constants';
 
 export class Hoop {
   x: number;

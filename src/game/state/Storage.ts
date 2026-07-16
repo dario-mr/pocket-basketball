@@ -1,3 +1,4 @@
+// Browser storage shared by mode, score, and game-state persistence.
 export const STORAGE_KEYS = {
   gameMode: 'gameMode',
   highScores: 'highScores',

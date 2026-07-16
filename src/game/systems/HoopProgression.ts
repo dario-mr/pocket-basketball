@@ -1,5 +1,5 @@
-import { WORLD } from '../Constants';
-import type { Physics } from '../Physics';
+import { WORLD } from '../core/Constants';
+import type { Physics } from '../core/Physics';
 import { clamp, lerp, random, type Point } from '../Utils';
 
 type Move = Readonly<{ from: Point; to: Point; started: number }>;

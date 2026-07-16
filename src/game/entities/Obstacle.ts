@@ -1,5 +1,5 @@
 import { Bodies, Body, World } from 'matter-js';
-import { WORLD } from '../Constants';
+import { WORLD } from '../core/Constants';
 import { clamp, lerp, random, type Point } from '../Utils';
 
 export const OBSTACLE_TYPES = {

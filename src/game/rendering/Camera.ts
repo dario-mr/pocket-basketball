@@ -1,4 +1,4 @@
-import { random } from './Utils';
+import { random } from '../Utils';
 
 export class Camera {
   x = 0;

@@ -1,7 +1,7 @@
-import { OBSTACLE_TYPES, type ObstacleState } from './entities/Obstacle';
+import { OBSTACLE_TYPES, type ObstacleState } from '../entities/Obstacle';
 import { GameMode } from './Modes';
 import { readJson, removeStorage, STORAGE_KEYS, writeJson } from './Storage';
-import type { Point } from './Utils';
+import type { Point } from '../Utils';
 
 export type SavedGameState = Readonly<{
   gameMode: GameMode;

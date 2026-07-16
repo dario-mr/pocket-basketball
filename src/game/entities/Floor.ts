@@ -1,5 +1,5 @@
 import { Bodies, Body } from 'matter-js';
-import { WORLD } from '../Constants';
+import { WORLD } from '../core/Constants';
 
 export const createFloor = (): Body =>
   Bodies.rectangle(WORLD.width / 2, WORLD.floorY + 18, WORLD.width + 100, 36, {

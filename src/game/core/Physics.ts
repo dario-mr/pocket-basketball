@@ -1,11 +1,11 @@
 import { Body, Engine, Events, Sleeping, World } from 'matter-js';
 import { BALL, HOOP, WORLD } from './Constants';
-import { createBall } from './entities/Ball';
-import { createFloor, createWalls } from './entities/Floor';
-import { Hoop } from './entities/Hoop';
-import { Obstacle, type ObstacleState } from './entities/Obstacle';
-import { ObstacleSpawner } from './systems/ObstacleSpawner';
-import type { Point } from './Utils';
+import { createBall } from '../entities/Ball';
+import { createFloor, createWalls } from '../entities/Floor';
+import { Hoop } from '../entities/Hoop';
+import { Obstacle, type ObstacleState } from '../entities/Obstacle';
+import { ObstacleSpawner } from '../systems/ObstacleSpawner';
+import type { Point } from '../Utils';
 
 export type HitKind = 'floor' | 'rim' | 'backboard';
 

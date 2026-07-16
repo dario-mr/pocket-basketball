@@ -1,4 +1,4 @@
-import { GameMode, loadHighScores, saveHighScore } from './Modes';
+import { GameMode, loadHighScores, saveHighScore } from '../state/Modes';
 
 export class Score {
   score = 0;

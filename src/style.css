@@ -26,7 +26,7 @@ canvas:active {
   place-items: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 160ms ease;
+  transition: opacity 225ms ease;
   background: #1b263b;
 }
 #overlay.is-visible {

@@ -1,13 +1,13 @@
 import './style.css';
-import { configureWorld } from './game/Constants';
+import { configureWorld } from './game/core/Constants';
 import { Game } from './game/Game';
 import {
   clearGameState,
   loadGameState,
   saveGameState,
   type SavedGameState,
-} from './game/GameState';
-import { type GameMode } from './game/Modes';
+} from './game/state/GameState';
+import { type GameMode } from './game/state/Modes';
 import { Menu } from './game/ui/Menu';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game');

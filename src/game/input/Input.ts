@@ -1,4 +1,4 @@
-import type { Point } from './Utils';
+import type { Point } from '../Utils';
 
 export class Input {
   private point: Point = { x: 0, y: 0 };

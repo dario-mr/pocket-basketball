@@ -1,14 +1,14 @@
 import type { Body } from 'matter-js';
-import { BALL, COLORS, HOOP, WORLD } from './Constants';
-import type { GameMode } from './Modes';
+import { BALL, COLORS, HOOP, WORLD } from '../core/Constants';
+import type { GameMode } from '../state/Modes';
 import type { Camera } from './Camera';
-import type { Particles } from './effects/Particles';
-import type { Hoop } from './entities/Hoop';
-import type { Net } from './entities/Net';
-import type { Obstacle } from './entities/Obstacle';
-import type { Point } from './Utils';
-import type { Hud } from './ui/Hud';
-import ballAsset from '../../assets/images/ball.png';
+import type { Particles } from '../effects/Particles';
+import type { Hoop } from '../entities/Hoop';
+import type { Net } from '../entities/Net';
+import type { Obstacle } from '../entities/Obstacle';
+import type { Point } from '../Utils';
+import type { Hud } from '../ui/Hud';
+import ballAsset from '../../../assets/images/ball.png';
 
 export class Renderer {
   private readonly canvas: HTMLCanvasElement;

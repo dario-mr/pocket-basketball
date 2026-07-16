@@ -1,4 +1,4 @@
-import { GAME_MODES, GameMode, loadMode, saveMode } from '../Modes';
+import { GAME_MODES, GameMode, loadMode, saveMode } from '../state/Modes';
 
 type MenuActions = Readonly<{
   onPlay: (mode: GameMode) => void;

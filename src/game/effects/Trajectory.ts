@@ -1,4 +1,4 @@
-import { BALL, WORLD } from '../Constants';
+import { BALL, WORLD } from '../core/Constants';
 import type { Point } from '../Utils';
 
 export const trajectory = (start: Point, pull: Point): Point[] => {

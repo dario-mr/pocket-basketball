@@ -1,4 +1,4 @@
-import { GAME_MODES, type GameMode } from '../Modes';
+import { GAME_MODES, type GameMode } from '../state/Modes';
 
 const HUD_INSET = 14;
 

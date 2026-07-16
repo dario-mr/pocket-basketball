@@ -31,7 +31,7 @@ export class Game {
   private state: State = 'idle';
   private dragStart: Point = { x: 0, y: 0 };
   private pull: Point = { x: 0, y: 0 };
-  private previousY = this.physics.position.y;
+  private passedAboveRim = false;
   private rimHit = false;
   private scoredThisShot = false;
   private baskets = 0;
@@ -157,7 +157,7 @@ export class Game {
     this.state = 'flying';
     this.rimHit = false;
     this.scoredThisShot = false;
-    this.previousY = this.physics.position.y;
+    this.passedAboveRim = false;
   }
 
   private hit(kind: HitKind, speed: number): void {
@@ -182,10 +182,11 @@ export class Game {
   private detectBasket(): void {
     const ball = this.physics.ball;
     const hoop = this.physics.hoop;
-    const crossedDown = this.previousY < hoop.y && ball.position.y >= hoop.y && ball.velocity.y > 0;
-    const insideRim =
-      ball.position.x > hoop.x - HOOP.gap / 2 + 3 && ball.position.x < hoop.x + HOOP.gap / 2 - 3;
-    if (!this.scoredThisShot && crossedDown && insideRim) {
+    const scoreLine = hoop.y + BALL.radius;
+    if (ball.position.y < hoop.y) this.passedAboveRim = true;
+    const belowRim = ball.position.y >= scoreLine && ball.velocity.y > 0;
+    const insideRim = Math.abs(ball.position.x - hoop.x) < HOOP.gap / 2 - HOOP.scoringInset;
+    if (!this.scoredThisShot && this.passedAboveRim && belowRim && insideRim) {
       this.scoredThisShot = true;
       this.baskets += 1;
       const swish = !this.rimHit;
@@ -195,7 +196,6 @@ export class Game {
       this.audio.play('swoosh');
       this.hud.show(swish ? `SWISH +${points}` : `+${points}`);
     }
-    this.previousY = ball.position.y;
   }
 
   private update(delta: number): void {

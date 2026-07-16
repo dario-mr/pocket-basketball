@@ -74,6 +74,7 @@ export const HOOP = {
   radius: 4,
   rimY: 190,
   gap: 72,
+  scoringInset: 3,
   boardWidth: 10,
   boardHeight: 125,
 } as const;

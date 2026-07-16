@@ -2,6 +2,7 @@ import { Audio } from './audio/Audio';
 import { BALL, HOOP, WORLD } from './core/Constants';
 import { Physics, type HitKind } from './core/Physics';
 import { Score } from './core/Score';
+import { PerformanceHud } from './debug/PerformanceHud';
 import { Particles } from './effects/Particles';
 import { trajectory } from './effects/Trajectory';
 import { Net } from './entities/Net';
@@ -39,6 +40,9 @@ export class Game {
   private animationFrame = 0;
   private paused = false;
   private destroyed = false;
+  private readonly performanceHud = new URLSearchParams(location.search).has('perf')
+    ? new PerformanceHud()
+    : null;
   private readonly onKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       event.preventDefault();
@@ -88,6 +92,7 @@ export class Game {
     cancelAnimationFrame(this.animationFrame);
     this.input.destroy();
     this.renderer.destroy();
+    this.performanceHud?.destroy();
     window.removeEventListener('keydown', this.onKeyDown);
   }
 
@@ -224,9 +229,16 @@ export class Game {
 
   private frame(time: number): void {
     if (this.destroyed) return;
-    const delta = Math.min(40, time - this.lastTime);
+    const frameTime = time - this.lastTime;
+    const delta = Math.min(40, frameTime);
     this.lastTime = time;
-    if (!this.paused) this.update(delta);
+    let updateTime = 0;
+    if (!this.paused) {
+      const updateStarted = this.performanceHud ? performance.now() : 0;
+      this.update(delta);
+      if (this.performanceHud) updateTime = performance.now() - updateStarted;
+    }
+    const renderStarted = this.performanceHud ? performance.now() : 0;
     this.renderer.render({
       ball: this.physics.ball,
       hoop: this.physics.hoop,
@@ -241,6 +253,8 @@ export class Game {
       combo: this.score.combo,
       mode: this.mode,
     });
+    if (this.performanceHud)
+      this.performanceHud.record(frameTime, updateTime, performance.now() - renderStarted);
     this.animationFrame = requestAnimationFrame((next) => this.frame(next));
   }
 }

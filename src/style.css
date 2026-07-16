@@ -152,6 +152,23 @@ canvas:active {
 #pause-button.is-visible {
   display: block;
 }
+.performance-hud {
+  position: fixed;
+  top: 54px;
+  right: 12px;
+  z-index: 2;
+  margin: 0;
+  padding: 7px 8px;
+  border-radius: 6px;
+  color: #fff8e8;
+  background: rgba(16, 24, 32, 0.75);
+  font:
+    600 11px/1.35 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  pointer-events: none;
+}
 @media (max-width: 520px) {
   .mode-options {
     grid-template-columns: 1fr;

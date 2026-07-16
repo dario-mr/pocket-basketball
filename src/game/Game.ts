@@ -14,7 +14,7 @@ import { HoopProgression } from './systems/HoopProgression';
 import { Hud } from './ui/Hud';
 import type { Point } from './Utils';
 
-type State = 'idle' | 'dragging' | 'flying' | 'rolling';
+type State = 'idle' | 'dragging' | 'cancelled' | 'flying' | 'rolling';
 
 export class Game {
   private readonly renderer: Renderer;
@@ -116,15 +116,32 @@ export class Game {
   }
 
   private drag(point: Point): void {
-    if (this.state !== 'dragging') return;
+    if (this.state !== 'dragging' && this.state !== 'cancelled') return;
     const x = point.x - this.dragStart.x;
     const y = point.y - this.dragStart.y;
     const length = Math.hypot(x, y);
+    if (this.state === 'cancelled') {
+      if (length < BALL.radius * 2) return;
+      this.state = 'dragging';
+    }
+    if (this.shouldCancelShot(length)) {
+      this.pull = { x: 0, y: 0 };
+      this.state = 'cancelled';
+      return;
+    }
     const scale = length > BALL.maxPull ? BALL.maxPull / length : 1;
     this.pull = { x: x * scale, y: y * scale };
   }
 
+  private shouldCancelShot(length: number): boolean {
+    return Math.hypot(this.pull.x, this.pull.y) >= 10 && length < BALL.radius * 2;
+  }
+
   private release(): void {
+    if (this.state === 'cancelled') {
+      this.state = 'idle';
+      return;
+    }
     if (this.state !== 'dragging') return;
     if (Math.hypot(this.pull.x, this.pull.y) < 10) {
       this.state = 'idle';

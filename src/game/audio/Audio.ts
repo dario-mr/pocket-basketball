@@ -1,4 +1,4 @@
-import { Howl } from 'howler';
+import { Howl, Howler } from 'howler';
 import { prepareAudioForPlayback } from './AudioSession';
 import rimAsset from '../../../assets/sounds/rim.mp3';
 import swooshAsset from '../../../assets/sounds/swoosh.mp3';
@@ -16,11 +16,17 @@ export class Audio {
   };
 
   constructor() {
+    this.activate();
+  }
+
+  activate(): void {
     prepareAudioForPlayback();
+    if (Howler.ctx?.state !== 'running') {
+      void Howler.ctx?.resume().catch(() => {});
+    }
   }
 
   play(sound: Sound): void {
-    prepareAudioForPlayback();
     const id = this.sounds[sound].play();
     this.sounds[sound].rate(0.94 + Math.random() * 0.12, id);
   }

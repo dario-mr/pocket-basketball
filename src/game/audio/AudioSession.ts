@@ -12,7 +12,9 @@ export const prepareAudioForPlayback = (): void => {
   }
 
   try {
-    audioSession.type = 'playback';
+    if (audioSession.type !== 'playback') {
+      audioSession.type = 'playback';
+    }
   } catch {
     // Some browsers expose the API without allowing it to be changed.
   }

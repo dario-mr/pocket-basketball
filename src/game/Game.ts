@@ -84,6 +84,7 @@ export class Game {
   }
 
   resume(): void {
+    this.audio.activate();
     this.paused = false;
     this.lastTime = performance.now();
   }
@@ -116,6 +117,7 @@ export class Game {
   }
 
   private startDrag(point: Point): void {
+    this.audio.activate();
     if (this.paused || this.state !== 'idle' || this.hoops.isMoving) {
       return;
     }

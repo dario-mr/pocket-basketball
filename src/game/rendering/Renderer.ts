@@ -202,6 +202,7 @@ export class Renderer {
   private net(hoop: Hoop, net: Net): void {
     const { context } = this;
     context.save();
+    context.translate(Math.sin(performance.now() * 0.04) * hoop.vibration, 0);
     context.strokeStyle = '#f5f4ed';
     context.globalAlpha = 0.75;
     context.lineWidth = 1.5;

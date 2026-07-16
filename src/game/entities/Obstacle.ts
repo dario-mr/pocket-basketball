@@ -12,6 +12,13 @@ export const OBSTACLE_TYPES = {
 
 export type ObstacleKind = keyof typeof OBSTACLE_TYPES;
 
+export type ObstacleState = Readonly<{
+  kind: ObstacleKind;
+  position: Point;
+  moving: boolean;
+  angle: number;
+}>;
+
 export class Obstacle {
   readonly kind: ObstacleKind;
   readonly body: Body;
@@ -19,16 +26,15 @@ export class Obstacle {
   private readonly origin: Point;
   private readonly phase = random(0, Math.PI * 2);
 
-  constructor(world: World, kind: ObstacleKind, from: Point, to: Point) {
+  constructor(world: World, kind: ObstacleKind, from: Point, to: Point, restored?: ObstacleState) {
     this.kind = kind;
-    const x = lerp(from.x, to.x, random(0.35, 0.65)) + random(-45, 45);
-    const y = clamp(
-      lerp(from.y, to.y, random(0.55, 0.85)) + random(-60, 60),
-      65,
-      WORLD.floorY - 155,
-    );
+    const x = restored?.position.x ?? lerp(from.x, to.x, random(0.35, 0.65)) + random(-45, 45);
+    const y =
+      restored?.position.y ??
+      clamp(lerp(from.y, to.y, random(0.55, 0.85)) + random(-60, 60), 65, WORLD.floorY - 155);
     this.origin = { x, y };
-    this.moving = kind === 'paddle' || (kind !== 'dot' && Math.random() < 0.5);
+    this.moving =
+      restored?.moving ?? (kind === 'paddle' || (kind !== 'dot' && Math.random() < 0.5));
     this.body =
       kind === 'dot'
         ? Bodies.circle(x, y, 12, { isStatic: true, label: 'obstacle', restitution: 0.8 })
@@ -43,12 +49,21 @@ export class Obstacle {
               restitution: 0.8,
             },
           );
-    if (kind === 'diagonal') Body.setAngle(this.body, Math.PI / 4);
+    Body.setAngle(this.body, restored?.angle ?? (kind === 'diagonal' ? Math.PI / 4 : 0));
     World.add(world, this.body);
   }
 
   get color(): string {
     return OBSTACLE_TYPES[this.kind].color;
+  }
+
+  snapshot(): ObstacleState {
+    return {
+      kind: this.kind,
+      position: { x: this.body.position.x, y: this.body.position.y },
+      moving: this.moving,
+      angle: this.body.angle,
+    };
   }
 
   update(time: number): void {

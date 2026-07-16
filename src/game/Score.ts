@@ -16,6 +16,11 @@ export class Score {
     this.highScore = saveHighScore(this.mode, this.score);
     return points;
   }
+  restore(score: number, combo: number): void {
+    this.score = score;
+    this.combo = combo;
+    this.highScore = saveHighScore(this.mode, score);
+  }
   miss(): void {
     this.combo = 0;
   }

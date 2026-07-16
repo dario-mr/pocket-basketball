@@ -6,6 +6,7 @@ import { GameMode } from './Modes';
 import { Physics, type HitKind } from './Physics';
 import { Renderer } from './Renderer';
 import { Score } from './Score';
+import type { SavedGameState } from './GameState';
 import { Particles } from './effects/Particles';
 import { trajectory } from './effects/Trajectory';
 import { Net } from './entities/Net';
@@ -51,6 +52,7 @@ export class Game {
     canvas: HTMLCanvasElement,
     private readonly mode: GameMode,
     private readonly onPause: () => void,
+    restored?: SavedGameState,
   ) {
     this.renderer = new Renderer(canvas);
     this.input = new Input(canvas, (event) => this.renderer.pointFromEvent(event));
@@ -59,6 +61,11 @@ export class Game {
     this.input.onMove = (point) => this.drag(point);
     this.input.onEnd = () => this.release();
     this.physics.onHit = (kind, speed) => this.hit(kind, speed);
+    if (restored) {
+      this.baskets = restored.baskets;
+      this.score.restore(restored.score, restored.combo);
+      this.physics.restore(restored.hoop, restored.obstacles, restored.ball);
+    }
     window.addEventListener('keydown', this.onKeyDown);
     this.animationFrame = requestAnimationFrame((time) => this.frame(time));
   }
@@ -81,6 +88,24 @@ export class Game {
     cancelAnimationFrame(this.animationFrame);
     this.input.destroy();
     window.removeEventListener('keydown', this.onKeyDown);
+  }
+
+  snapshot(): SavedGameState {
+    const ball =
+      this.state === 'idle' &&
+      this.physics.isSettled &&
+      this.physics.position.y >= WORLD.floorY - BALL.radius - 4
+        ? { x: this.physics.position.x, y: this.physics.position.y }
+        : undefined;
+    return {
+      gameMode: this.mode,
+      score: this.score.score,
+      combo: this.score.combo,
+      baskets: this.baskets,
+      ...(ball && { ball }),
+      hoop: { x: this.physics.hoop.x, y: this.physics.hoop.y },
+      obstacles: this.physics.obstacles.map((obstacle) => obstacle.snapshot()),
+    };
   }
 
   private startDrag(point: Point): void {

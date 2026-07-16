@@ -3,7 +3,7 @@ import { BALL, HOOP, WORLD } from './Constants';
 import { createBall } from './entities/Ball';
 import { createFloor, createWalls } from './entities/Floor';
 import { Hoop } from './entities/Hoop';
-import { Obstacle } from './entities/Obstacle';
+import { Obstacle, type ObstacleState } from './entities/Obstacle';
 import { ObstacleSpawner } from './systems/ObstacleSpawner';
 import type { Point } from './Utils';
 
@@ -64,6 +64,26 @@ export class Physics {
   }
   addObstacle(from: Point, to: Point): void {
     this.obstacleSpawner.spawn(this.engine.world, this.obstacles, from, to);
+  }
+  restore(hoop: Point, obstacles: ObstacleState[], ball?: Point): void {
+    this.hoop.move(this.engine.world, hoop.x, hoop.y);
+    if (ball) {
+      Body.setPosition(this.ball, ball);
+      Body.setVelocity(this.ball, { x: 0, y: 0 });
+      Body.setAngularVelocity(this.ball, 0);
+      Sleeping.set(this.ball, true);
+    }
+    obstacles.forEach((obstacle) => {
+      this.obstacles.push(
+        new Obstacle(
+          this.engine.world,
+          obstacle.kind,
+          obstacle.position,
+          obstacle.position,
+          obstacle,
+        ),
+      );
+    });
   }
   wake(): void {
     Sleeping.set(this.ball, false);

@@ -13,7 +13,9 @@ export class Menu {
   constructor(
     private readonly root: HTMLElement,
     private readonly actions: MenuActions,
-  ) {}
+  ) {
+    saveMode(this.selected);
+  }
 
   hide(): void {
     this.root.classList.remove('is-visible');

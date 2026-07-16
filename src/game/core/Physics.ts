@@ -33,7 +33,7 @@ export class Physics {
         }
         const kind = other.label as HitKind;
         if (kind === 'floor' || kind === 'rim' || kind === 'backboard') {
-          this.onHit?.(kind, this.speed);
+          this.onHit?.(kind, kind === 'floor' ? Math.abs(this.ball.velocity.y) : this.speed);
         }
       }
     });

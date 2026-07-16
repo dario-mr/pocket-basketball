@@ -54,8 +54,11 @@ export class Audio {
     }
   }
 
-  play(sound: Sound): void {
+  play(sound: Sound, volume?: number): void {
     const id = this.sounds[sound].play();
+    if (volume !== undefined) {
+      this.sounds[sound].volume(volume, id);
+    }
     this.sounds[sound].rate(0.94 + Math.random() * 0.12, id);
   }
 }

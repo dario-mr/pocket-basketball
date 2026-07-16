@@ -34,6 +34,7 @@ export class Game {
   private dragStart: Point = { x: 0, y: 0 };
   private pull: Point = { x: 0, y: 0 };
   private rimHit = false;
+  private lastBounceAt = -Infinity;
   private baskets = 0;
   private accumulator = 0;
   private lastTime = performance.now();
@@ -182,7 +183,11 @@ export class Game {
       }
     }
     if (kind === 'floor') {
-      this.audio.play('bounce');
+      const now = performance.now();
+      if (speed >= 2 && now - this.lastBounceAt >= 80) {
+        this.lastBounceAt = now;
+        this.audio.play('bounce', Math.min(0.22, Math.max(0.06, speed * 0.017)));
+      }
       this.particles.burst({ x: this.physics.position.x, y: WORLD.floorY }, '#dbc49f', 5);
       if (speed > 8) {
         this.camera.hit(1.8);

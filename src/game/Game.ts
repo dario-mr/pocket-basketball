@@ -92,6 +92,7 @@ export class Game {
   destroy(): void {
     this.destroyed = true;
     cancelAnimationFrame(this.animationFrame);
+    this.audio.destroy();
     this.input.destroy();
     this.renderer.destroy();
     this.performanceHud?.destroy();

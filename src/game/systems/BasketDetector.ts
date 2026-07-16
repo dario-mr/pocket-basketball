@@ -1,35 +1,42 @@
 import type { Body } from 'matter-js';
 import { HOOP } from '../core/Constants';
 import type { Hoop } from '../entities/Hoop';
+import type { Point } from '../Utils';
 
 export class BasketDetector {
-  private passedAboveRim = false;
+  private enteredRim = false;
   private scoredThisShot = false;
+  private previousX = 0;
   private previousY = 0;
 
   get hasScored(): boolean {
     return this.scoredThisShot;
   }
 
-  reset(ballY: number): void {
-    this.passedAboveRim = false;
+  reset(ballPosition: Point): void {
+    this.enteredRim = false;
     this.scoredThisShot = false;
-    this.previousY = ballY;
+    this.previousX = ballPosition.x;
+    this.previousY = ballPosition.y;
   }
 
   detect(ball: Body, hoop: Hoop): boolean {
     if (this.scoredThisShot) {
       return false;
     }
-    if (ball.position.y < hoop.y) {
-      this.passedAboveRim = true;
+    const crossedRimDown = this.previousY < hoop.y && ball.position.y >= hoop.y;
+    if (crossedRimDown) {
+      const crossingX =
+        this.previousX +
+        ((ball.position.x - this.previousX) * (hoop.y - this.previousY)) /
+          (ball.position.y - this.previousY);
+      this.enteredRim = Math.abs(crossingX - hoop.x) < HOOP.gap / 2 - HOOP.scoringInset;
     }
     const scoreLine = hoop.y + HOOP.scoringDepth;
-    const crossedDown =
-      this.previousY < scoreLine && ball.position.y >= scoreLine && ball.velocity.y > 0;
-    const insideRim = Math.abs(ball.position.x - hoop.x) < HOOP.gap / 2 - HOOP.scoringInset;
+    const crossedDown = this.previousY < scoreLine && ball.position.y >= scoreLine;
+    this.previousX = ball.position.x;
     this.previousY = ball.position.y;
-    if (!this.passedAboveRim || !crossedDown || !insideRim) {
+    if (!this.enteredRim || !crossedDown) {
       return false;
     }
     this.scoredThisShot = true;

@@ -1,5 +1,5 @@
 import { Audio } from './audio/Audio';
-import { BALL, HOOP, WORLD } from './core/Constants';
+import { BALL, WORLD } from './core/Constants';
 import { Physics, type HitKind } from './core/Physics';
 import { Score } from './core/Score';
 import { PerformanceHud } from './debug/PerformanceHud';
@@ -11,6 +11,7 @@ import { Camera } from './rendering/Camera';
 import { Renderer } from './rendering/Renderer';
 import type { SavedGameState } from './state/GameState';
 import { GameMode } from './state/Modes';
+import { BasketDetector } from './systems/BasketDetector';
 import { HoopProgression } from './systems/HoopProgression';
 import { Hud } from './ui/Hud';
 import type { Point } from './Utils';
@@ -21,6 +22,7 @@ export class Game {
   private readonly renderer: Renderer;
   private readonly physics = new Physics();
   private readonly hoops = new HoopProgression(this.physics);
+  private readonly basketDetector = new BasketDetector();
   private readonly input: Input;
   private readonly camera = new Camera();
   private readonly audio = new Audio();
@@ -31,9 +33,7 @@ export class Game {
   private state: State = 'idle';
   private dragStart: Point = { x: 0, y: 0 };
   private pull: Point = { x: 0, y: 0 };
-  private passedAboveRim = false;
   private rimHit = false;
-  private scoredThisShot = false;
   private baskets = 0;
   private accumulator = 0;
   private lastTime = performance.now();
@@ -156,8 +156,7 @@ export class Game {
     this.physics.launch(this.pull);
     this.state = 'flying';
     this.rimHit = false;
-    this.scoredThisShot = false;
-    this.passedAboveRim = false;
+    this.basketDetector.reset();
   }
 
   private hit(kind: HitKind, speed: number): void {
@@ -180,14 +179,8 @@ export class Game {
   }
 
   private detectBasket(): void {
-    const ball = this.physics.ball;
     const hoop = this.physics.hoop;
-    const scoreLine = hoop.y + BALL.radius;
-    if (ball.position.y < hoop.y) this.passedAboveRim = true;
-    const belowRim = ball.position.y >= scoreLine && ball.velocity.y > 0;
-    const insideRim = Math.abs(ball.position.x - hoop.x) < HOOP.gap / 2 - HOOP.scoringInset;
-    if (!this.scoredThisShot && this.passedAboveRim && belowRim && insideRim) {
-      this.scoredThisShot = true;
+    if (this.basketDetector.detect(this.physics.ball, hoop)) {
       this.baskets += 1;
       const swish = !this.rimHit;
       const points = this.score.basket(swish);
@@ -220,7 +213,8 @@ export class Game {
       this.physics.isSettled &&
       !this.hoops.isMoving
     ) {
-      if (this.scoredThisShot) this.hoops.start(this.baskets, this.mode === GameMode.Obstacles);
+      if (this.basketDetector.hasScored)
+        this.hoops.start(this.baskets, this.mode === GameMode.Obstacles);
       else this.score.miss();
       this.state = this.hoops.isMoving ? 'rolling' : 'idle';
     }

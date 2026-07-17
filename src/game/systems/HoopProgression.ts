@@ -1,4 +1,4 @@
-import { WORLD } from '../core/Constants';
+import { HOOP, WORLD } from '../core/Constants';
 import type { Physics } from '../core/Physics';
 import { clamp, lerp, random, type Point } from '../Utils';
 
@@ -50,12 +50,12 @@ export class HoopProgression {
 
   private nextTarget(baskets: number): Point {
     const fallback = this.randomTarget(baskets);
-    if (this.physics.isHoopClear(fallback)) {
+    if (this.isNewClearTarget(fallback)) {
       return fallback;
     }
     for (let attempt = 0; attempt < 11; attempt += 1) {
       const target = this.randomTarget(baskets);
-      if (this.physics.isHoopClear(target)) {
+      if (this.isNewClearTarget(target)) {
         return target;
       }
     }
@@ -64,7 +64,7 @@ export class HoopProgression {
       for (let y = WORLD.hoopMinY; y <= WORLD.hoopMaxY; y += 40) {
         const target = { x, y };
         if (
-          this.physics.isHoopClear(target) &&
+          this.isNewClearTarget(target) &&
           (!alternative ||
             Math.hypot(target.x - fallback.x, target.y - fallback.y) <
               Math.hypot(alternative.x - fallback.x, alternative.y - fallback.y))
@@ -76,17 +76,31 @@ export class HoopProgression {
     return alternative ?? fallback;
   }
 
+  private isNewClearTarget(target: Point): boolean {
+    return (
+      this.physics.isHoopClear(target) &&
+      Math.hypot(target.x - this.physics.hoop.x, target.y - this.physics.hoop.y) >= HOOP.gap / 2
+    );
+  }
+
   private randomTarget(baskets: number): Point {
-    const distanceBonus = Math.floor(baskets / 5) * 38;
-    const horizontal = WORLD.hoopDistance + distanceBonus + random(-55, 60);
+    const difficulty = Math.floor(baskets / 5);
     const side = this.physics.position.x < WORLD.width / 2 ? 1 : -1;
+    const maxHorizontal =
+      side === 1
+        ? WORLD.hoopMaxX - this.physics.position.x
+        : this.physics.position.x - WORLD.hoopMinX;
+    const desiredHorizontal = WORLD.hoopDistance + Math.min(difficulty * 38, WORLD.hoopDistance / 2);
+    const minHorizontal = Math.min(desiredHorizontal - 55, maxHorizontal - 30);
+    const horizontal = random(minHorizontal, Math.max(minHorizontal, Math.min(desiredHorizontal + 60, maxHorizontal)));
+    const y = clamp(
+      WORLD.hoopStartY - difficulty * 10,
+      WORLD.hoopMinY + 40,
+      WORLD.hoopMaxY - 40,
+    );
     return {
       x: clamp(this.physics.position.x + side * horizontal, WORLD.hoopMinX, WORLD.hoopMaxX),
-      y: clamp(
-        WORLD.hoopStartY - Math.floor(baskets / 5) * 10 + random(-35, 35),
-        WORLD.hoopMinY,
-        WORLD.hoopMaxY,
-      ),
+      y: random(y - 35, y + 35),
     };
   }
 }
